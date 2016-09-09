@@ -7,11 +7,11 @@ namespace BTOFindrWeb.Models
 {
     public class Project
     {
-        public string ProjectId { get; set; }
-        public string ProjectName { get; set; }
-        public string TownName { get; set; }
-        public string BallotDate { get; set; }
-        public string ProjectImage { get; set; }
-        public List<Block> Blocks { get; set; }
+        public string projectId { get; set; }
+        public string projectName { get; set; }
+        public string townName { get; set; }
+        public string ballotDate { get; set; }
+        public string projectImage { get; set; }
+        public List<Block> blocks { get; set; }
     }
 }

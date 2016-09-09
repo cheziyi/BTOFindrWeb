@@ -7,12 +7,12 @@ namespace BTOFindrWeb.Models
 {
    public class UnitType
     {
-        public int UnitTypeId { get; set; }
-        public string UnitTypeName { get; set; }
-        public int QuotaMalay { get; set; }
-        public int QuotaChinese { get; set; }
-        public int QuotaOthers { get; set; }
-        public List<Unit> Units { get; set; }
-        public Block Block { get; set; }
+        public int unitTypeId { get; set; }
+        public string unitTypeName { get; set; }
+        public int quotaMalay { get; set; }
+        public int quotaChinese { get; set; }
+        public int quotaOthers { get; set; }
+        public List<Unit> units { get; set; }
+        public Block block { get; set; }
     }
 }

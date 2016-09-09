@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BTOFindrWeb.Models;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
@@ -36,6 +37,16 @@ namespace BTOFindrWeb.Controllers
                 }
             }
             return towns;
+        }
+
+        [HttpGet]
+        public Project Projects()
+        {
+            Project p = new Project();
+            p.projectId = "lala";
+            p.projectName = "lol";
+            p.townName = "punggol";
+            return p;
         }
 
         // GET: api/Projects/5

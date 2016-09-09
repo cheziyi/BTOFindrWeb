@@ -7,12 +7,11 @@ namespace BTOFindrWeb.Models
 {
     public class Unit
     {
-        public int UnitId { get; set; }
-        public string UnitNo { get; set; }
-        public decimal Price { get; set; }
-        public int FloorArea { get; set; }
-        public Boolean Avail { get; set; }
-        public UnitType UnitType { get; set; }
-        public Floor Floor { get; set; }
+        public int unitId { get; set; }
+        public string unitNo { get; set; }
+        public decimal price { get; set; }
+        public int floorArea { get; set; }
+        public Boolean avail { get; set; }
+        public UnitType unitType { get; set; }
     }
 }
