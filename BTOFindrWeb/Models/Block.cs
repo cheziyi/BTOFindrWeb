@@ -13,6 +13,7 @@ namespace BTOFindrWeb.Models
         public DateTime deliveryDate { get; set; }
         public decimal locLat { get; set; }
         public decimal locLong { get; set; }
+        public int travelTime { get; set; }
         public string sitePlan { get; set; }
         public string townMap { get; set; }
         public string blockPlan { get; set; }
@@ -20,6 +21,8 @@ namespace BTOFindrWeb.Models
         public string floorPlan { get; set; }
         public string layoutIdeas { get; set; }
         public string specs { get; set; }
+        public decimal minPrice { get; set; }
+        public decimal maxPrice { get; set; }
         public Project project { get; set; }
         public List<UnitType> unitTypes { get; set; }
     }

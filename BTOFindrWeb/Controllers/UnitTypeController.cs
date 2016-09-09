@@ -9,14 +9,14 @@ using System.Web.Http;
 
 namespace BTOFindrWeb.Controllers
 {
-    public class UnitTypesController : ApiController
+    public class UnitTypeController : ApiController
     {
 
         String connString = ConfigurationManager.ConnectionStrings["conn"].ConnectionString;
 
 
         [HttpGet]
-        public IEnumerable<string> Types()
+        public IEnumerable<string> GetUnitTypes()
         {
             List<string> types = new List<string>();
 
