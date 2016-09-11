@@ -19,22 +19,28 @@ namespace BTOFindrWeb.Controllers
         public IEnumerable<string> GetTownNames()
         {
             List<string> towns = new List<string>();
-
-            using (SqlConnection conn = new SqlConnection(connString))
+            try
             {
-                String query = "SELECT DISTINCT TownName FROM Projects ORDER BY TownName ASC";
-                using (SqlCommand cmd = new SqlCommand(query, conn))
+                using (SqlConnection conn = new SqlConnection(connString))
                 {
-                    conn.Open();
-
-                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    String query = "SELECT DISTINCT TownName FROM Projects ORDER BY TownName ASC";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
-                        while (dr.Read())
+                        conn.Open();
+
+                        using (SqlDataReader dr = cmd.ExecuteReader())
                         {
-                            towns.Add(dr["TownName"].ToString());
+                            while (dr.Read())
+                            {
+                                towns.Add(dr["TownName"].ToString());
+                            }
                         }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
             return towns;
         }
