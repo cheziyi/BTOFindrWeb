@@ -13,5 +13,6 @@ namespace BTOFindrWeb.Models
         public int floorArea { get; set; }
         public Boolean avail { get; set; }
         public UnitType unitType { get; set; }
+        public int faveCount { get; set; }
     }
 }

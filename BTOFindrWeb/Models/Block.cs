@@ -14,6 +14,7 @@ namespace BTOFindrWeb.Models
         public decimal locLat { get; set; }
         public decimal locLong { get; set; }
         public int travelTime { get; set; }
+        public int travelDist { get; set; }
         public string sitePlan { get; set; }
         public string townMap { get; set; }
         public string blockPlan { get; set; }

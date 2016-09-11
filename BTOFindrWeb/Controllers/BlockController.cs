@@ -62,7 +62,7 @@ namespace BTOFindrWeb.Controllers
                 }
             }
 
-            query += "(Units.Price > " + paras.minPrice + ") AND (Units.Price < " + paras.maxPrice + ") ";
+            query += "(Units.Price >= " + paras.minPrice + ") AND (Units.Price <= " + paras.maxPrice + ") ";
 
             query += "GROUP BY Blocks.BlockId, Blocks.BlockNo, Blocks.Street, Blocks.ProjectId, Blocks.DeliveryDate, Blocks.LocLat, Blocks.LocLong, ";
             query += "Blocks.SitePlan, Blocks.TownMap, Blocks.BlockPlan, Blocks.UnitDist, Blocks.FloorPlan, Blocks.LayoutIdeas, Blocks.Specs ";
@@ -107,28 +107,94 @@ namespace BTOFindrWeb.Controllers
             foreach (Block b in blocks)
             {
                 b.project = pc.GetProject(b.project.projectId);
-                b.travelTime = CalculateTravellingTime(b.locLat, b.locLong, paras.originPlaceId);
+                CalculateTravel(b, paras.postalCode);
             }
+
+            SortBlocks(paras.orderBy, blocks);
 
             return blocks;
         }
 
 
-
-        private int CalculateTravellingTime(decimal locLat, decimal locLong, string originPlaceId)
+        private void SortBlocks(char orderBy, List<Block> blocks)
         {
-            int time = 0;
-            string uri = "https://maps.googleapis.com/maps/api/distancematrix/xml?units=metric";
-            string key = "&key=AIzaSyAx2cHrI8CjdzkiByY_FS1nV93CFx9LD54";
-            string origin = "&origins=" + locLat + "," + locLong;
-            string destination = "&destinations=place_id:" + originPlaceId;
+            if (orderBy == 'T')
+            {
+                SortBlocksByPrice(blocks);
+                SortBlocksByTime(blocks);
+            }
+            else if (orderBy == 'P')
+            {
+                SortBlocksByTime(blocks);
+                SortBlocksByPrice(blocks);
+            }
+        }
 
-            XmlTextReader reader = new XmlTextReader(uri + key + origin + destination);
+        private void SortBlocksByPrice(List<Block> blocks)
+        {
+            Block temp = new Block();
+
+            for (int write = 0; write < blocks.Count(); write++)
+            {
+                for (int sort = 0; sort < blocks.Count() - 1; sort++)
+                {
+                    if (blocks[sort].maxPrice > blocks[sort + 1].maxPrice)
+                    {
+                        temp = blocks[sort + 1];
+                        blocks[sort + 1] = blocks[sort];
+                        blocks[sort] = temp;
+                    }
+                }
+            }
+
+            for (int write = 0; write < blocks.Count(); write++)
+            {
+                for (int sort = 0; sort < blocks.Count() - 1; sort++)
+                {
+                    if (blocks[sort].minPrice > blocks[sort + 1].minPrice)
+                    {
+                        temp = blocks[sort + 1];
+                        blocks[sort + 1] = blocks[sort];
+                        blocks[sort] = temp;
+                    }
+                }
+            }
+        }
+
+        private void SortBlocksByTime(List<Block> blocks)
+        {
+            Block temp = new Block();
+
+            for (int write = 0; write < blocks.Count(); write++)
+            {
+                for (int sort = 0; sort < blocks.Count() - 1; sort++)
+                {
+                    if (blocks[sort].travelTime > blocks[sort + 1].travelTime)
+                    {
+                        temp = blocks[sort + 1];
+                        blocks[sort + 1] = blocks[sort];
+                        blocks[sort] = temp;
+                    }
+                }
+            }
+        }
+
+
+
+        private void CalculateTravel(Block block, string postalCode)
+        {
+            string uri = "https://maps.googleapis.com/maps/api/distancematrix/xml?units=metric";
+            string key = "AIzaSyAx2cHrI8CjdzkiByY_FS1nV93CFx9LD54";
+            uri += "&key=" + key + "&origins=" + block.locLat + "," + block.locLong + "&destinations=" + postalCode;
+
+            XmlTextReader reader = new XmlTextReader(uri);
             reader.ReadToFollowing("duration");
             reader.ReadToFollowing("value");
-            time = Convert.ToInt32(reader.ReadElementContentAsString());
+            block.travelTime = Convert.ToInt32(reader.ReadElementContentAsString());
 
-            return time;
+            reader.ReadToFollowing("distance");
+            reader.ReadToFollowing("value");
+            block.travelDist = Convert.ToInt32(reader.ReadElementContentAsString());
         }
     }
 }

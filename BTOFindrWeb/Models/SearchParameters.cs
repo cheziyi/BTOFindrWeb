@@ -14,7 +14,6 @@ namespace BTOFindrWeb.Models
         public decimal maxPrice { get; set; }
         public decimal minPrice { get; set; }
         public char orderBy { get; set; }
-        public Boolean orderAsc { get; set; }
-        public string originPlaceId { get; set; }
+        public string postalCode { get; set; }
     }
 }
