@@ -14,5 +14,6 @@ namespace BTOFindrWeb.Models
         public Boolean avail { get; set; }
         public UnitType unitType { get; set; }
         public int faveCount { get; set; }
+        public FeesPayable fees { get; set; }
     }
 }

@@ -16,7 +16,7 @@ namespace BTOFindrWeb.Controllers
         String connString = ConfigurationManager.ConnectionStrings["conn"].ConnectionString;
 
         [HttpPost]
-        public IEnumerable<Block> SearchBlocks(SearchParameters paras)
+        public IEnumerable<Block> SearchBlocks(SearchParameters searchParams)
         {
             List<Block> blocks = new List<Block>();
 
@@ -28,41 +28,41 @@ namespace BTOFindrWeb.Controllers
             query += "UnitTypes ON Blocks.BlockId = UnitTypes.BlockId INNER JOIN ";
             query += "Units ON UnitTypes.UnitTypeId = Units.UnitTypeId WHERE ";
 
-            if (paras.townNames.Length > 0)
+            if (searchParams.townNames.Length > 0)
             {
                 query += "( ";
-                for (int i = 0; i < paras.townNames.Length; i++)
+                for (int i = 0; i < searchParams.townNames.Length; i++)
                 {
-                    query += "(Projects.TownName = '" + paras.townNames[i] + "') ";
-                    if (i != paras.townNames.Length - 1)
+                    query += "(Projects.TownName = '" + searchParams.townNames[i] + "') ";
+                    if (i != searchParams.townNames.Length - 1)
                         query += "OR ";
                     else
                         query += ") AND ";
                 }
             }
 
-            if (paras.ethnicGroup == 'C')
+            if (searchParams.ethnicGroup == 'C')
                 query += "(UnitTypes.QuotaChinese > 0) AND ";
-            else if (paras.ethnicGroup == 'M')
+            else if (searchParams.ethnicGroup == 'M')
                 query += "(UnitTypes.QuotaMalay > 0) AND ";
-            else if (paras.ethnicGroup == 'O')
+            else if (searchParams.ethnicGroup == 'O')
                 query += "(UnitTypes.QuotaOthers > 0) AND ";
 
 
-            if (paras.roomTypes.Length > 0)
+            if (searchParams.roomTypes.Length > 0)
             {
                 query += "( ";
-                for (int i = 0; i < paras.roomTypes.Length; i++)
+                for (int i = 0; i < searchParams.roomTypes.Length; i++)
                 {
-                    query += "(UnitTypes.UnitTypeName = '" + paras.roomTypes[i] + "') ";
-                    if (i != paras.roomTypes.Length - 1)
+                    query += "(UnitTypes.UnitTypeName = '" + searchParams.roomTypes[i] + "') ";
+                    if (i != searchParams.roomTypes.Length - 1)
                         query += "OR ";
                     else
                         query += ") AND ";
                 }
             }
 
-            query += "(Units.Price >= " + paras.minPrice + ") AND (Units.Price <= " + paras.maxPrice + ") ";
+            query += "(Units.Price >= " + searchParams.minPrice + ") AND (Units.Price <= " + searchParams.maxPrice + ") ";
 
             query += "GROUP BY Blocks.BlockId, Blocks.BlockNo, Blocks.Street, Blocks.ProjectId, Blocks.DeliveryDate, Blocks.LocLat, Blocks.LocLong, ";
             query += "Blocks.SitePlan, Blocks.TownMap, Blocks.BlockPlan, Blocks.UnitDist, Blocks.FloorPlan, Blocks.LayoutIdeas, Blocks.Specs ";
@@ -110,11 +110,11 @@ namespace BTOFindrWeb.Controllers
                     foreach (Block b in blocks)
                     {
                         b.project = pc.GetProject(b.project.projectId);
-                        CalculateTravel(b, paras.postalCode);
+                        CalculateTravel(b, searchParams.postalCode);
                     }
                 }
 
-                SortBlocks(paras.orderBy, blocks);
+                SortBlocks(searchParams.orderBy, blocks);
             }
             catch (Exception ex)
             {
