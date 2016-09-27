@@ -124,9 +124,9 @@ namespace BTOFindrWeb.Controllers
             Unit unit = GetUnit(payParams.unitId);
             FeesPayable fees = new FeesPayable();
 
-            if(payParams.income<=1500)
+            if (payParams.income <= 1500)
             {
-                fees.grantAmt= 80000;
+                fees.grantAmt = 80000;
             }
             else if (payParams.income <= 2000)
             {
@@ -213,28 +213,7 @@ namespace BTOFindrWeb.Controllers
             fees.signingFeesCash = 0;
             fees.signingFeesCpf = 0;
 
-            //if (payParams.loan == 'H')
-            //{
             decimal downpayment = Decimal.Multiply(fees.afterGrantAmt, (decimal)0.10);
-            //}
-            //else if(payParams.loan == 'B')
-            //{
-            //    if(payParams.loanPercent >60 && payParams.loanPercent <= 80)
-            //    {
-            //        fees.signingFeesCash = Decimal.Multiply(fees.afterGrantAmt, (decimal)0.05);
-            //        fees.signingFeesCpf = Decimal.Multiply(fees.afterGrantAmt, (decimal)0.15);
-            //    }
-            //    else if (payParams.loanPercent > 50 && payParams.loanPercent <= 60)
-            //    {
-            //        fees.signingFeesCash = Decimal.Multiply(fees.afterGrantAmt, (decimal)0.10);
-            //        fees.signingFeesCpf = Decimal.Multiply(fees.afterGrantAmt, (decimal)0.30);
-            //    }
-            //    else
-            //    {
-
-            //    }
-
-            //}
 
             fees.signingFeesCpf += downpayment;
 
@@ -338,7 +317,6 @@ namespace BTOFindrWeb.Controllers
                 fees.collectionFeesCash = fees.collectionFeesCpf - payParams.currentCpf;
                 fees.collectionFeesCpf = payParams.currentCpf;
             }
-
 
 
             decimal balance = fees.afterGrantAmt - downpayment;
