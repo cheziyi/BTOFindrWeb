@@ -10,7 +10,7 @@ namespace BTOFindrWeb.Models
 
         public string[] townNames { get; set; }
         public char ethnicGroup { get; set; }
-        public string[] roomTypes { get; set; }
+        public string[] unitTypes { get; set; }
         public decimal maxPrice { get; set; }
         public decimal minPrice { get; set; }
         public char orderBy { get; set; }

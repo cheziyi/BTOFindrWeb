@@ -115,6 +115,74 @@ namespace BTOFindrWeb.Controllers
         {
             List<Unit> units = new List<Unit>();
 
+
+            String query = "SELECT TOP (20) Units.UnitId ";
+            query += "FROM Units INNER JOIN ";
+            query += "UnitTypes ON UnitTypes.UnitTypeId = Units.UnitTypeId INNER JOIN ";
+            query += "Blocks ON Blocks.BlockId = UnitTypes.BlockId INNER JOIN ";
+            query += "Projects ON Blocks.ProjectId = Projects.ProjectId WHERE ";
+
+
+            String priceQuery = "( ";
+            String townQuery = "( ";
+            String unitQuery = "( ";
+
+            for (int i = 0; i < unitIds.Length; i++)
+            {
+                Unit u = GetUnit(unitIds[i]);
+
+                priceQuery += "((Units.Price >= " + Math.Round(u.price / 10000) * 10000 + ") AND (Units.Price <= " + Math.Round((u.price+10000) / 10000) * 10000 + ")) ";
+                if (i != unitIds.Length - 1)
+                    priceQuery += "OR ";
+                else
+                    priceQuery += ") AND ";
+
+                townQuery += "(Projects.TownName = '" + u.unitType.block.project.townName + "') ";
+                if (i != unitIds.Length - 1)
+                    townQuery += "OR ";
+                else
+                    townQuery += ") AND ";
+
+                unitQuery += "(Units.UnitId != " + u.unitId + ") ";
+                if (i != unitIds.Length - 1)
+                    unitQuery += "AND ";
+                else
+                    unitQuery += ") ";
+            }
+
+
+
+            query += priceQuery + townQuery + unitQuery;
+            query += "ORDER BY Units.FaveCount DESC, Units.Price ASC";
+
+
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connString))
+                {
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        conn.Open();
+
+                        using (SqlDataReader dr = cmd.ExecuteReader())
+                        {
+                            while (dr.Read())
+                            {
+                                Unit u = GetUnit(Convert.ToInt32(dr["UnitId"]));
+                                units.Add(u);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+
+
             return units;
         }
 
@@ -213,7 +281,7 @@ namespace BTOFindrWeb.Controllers
             fees.signingFeesCash = 0;
             fees.signingFeesCpf = 0;
 
-            decimal downpayment = Decimal.Multiply(fees.afterGrantAmt, (decimal)0.10);
+            decimal downpayment = fees.afterGrantAmt * 0.10m;
 
             fees.signingFeesCpf += downpayment;
 
@@ -221,22 +289,22 @@ namespace BTOFindrWeb.Controllers
 
             if (fees.afterGrantAmt <= 180000)
             {
-                stampDutyLease += Decimal.Multiply(fees.afterGrantAmt, (decimal)0.01);
+                stampDutyLease += fees.afterGrantAmt * 0.01m;
             }
             else
             {
-                stampDutyLease += Decimal.Multiply(180000, (decimal)0.01);
+                stampDutyLease += 180000 * 0.01m;
                 if (fees.afterGrantAmt <= 360000)
                 {
-                    stampDutyLease += Decimal.Multiply((fees.afterGrantAmt - 180000), (decimal)0.02);
+                    stampDutyLease += (fees.afterGrantAmt - 180000m) * 0.02m;
                 }
                 else
                 {
-                    stampDutyLease += Decimal.Multiply(180000, (decimal)0.02);
-                    stampDutyLease += Decimal.Multiply((fees.afterGrantAmt - 360000), (decimal)0.03);
+                    stampDutyLease += 180000 * 0.02m;
+                    stampDutyLease += (fees.afterGrantAmt - 360000) * 0.03m;
                 }
             }
-            stampDutyLease = Math.Round(Decimal.Multiply(stampDutyLease, (decimal)100)) / 100;
+            stampDutyLease = Math.Round(stampDutyLease * 100m) / 100;
             fees.signingFeesCpf += stampDutyLease;
 
 
@@ -244,29 +312,29 @@ namespace BTOFindrWeb.Controllers
 
             if (fees.afterGrantAmt <= 30000)
             {
-                conveyancing += Decimal.Multiply(Math.Round(fees.afterGrantAmt / 1000), (decimal)0.90);
+                conveyancing += Math.Round(fees.afterGrantAmt / 1000) * 0.90m;
             }
             else
             {
-                conveyancing += Decimal.Multiply(Math.Round((decimal)30000 / (decimal)1000), (decimal)0.90);
+                conveyancing += Math.Round(30000m / 1000m) * 0.90m;
                 if (fees.afterGrantAmt <= 60000)
                 {
-                    conveyancing += Decimal.Multiply(Math.Round((fees.afterGrantAmt - 30000) / 1000), (decimal)0.72);
+                    conveyancing += Math.Round((fees.afterGrantAmt - 30000) / 1000) * 0.72m;
                 }
                 else
                 {
-                    conveyancing += Decimal.Multiply(Math.Round((decimal)30000 / (decimal)1000), (decimal)0.72);
-                    conveyancing += Decimal.Multiply(Math.Round((fees.afterGrantAmt - 60000) / 1000), (decimal)0.60);
+                    conveyancing += Math.Round(30000m / 1000m) * 0.72m;
+                    conveyancing += Math.Round((fees.afterGrantAmt - 60000) / 1000) * 0.60m;
                 }
             }
 
             if (conveyancing < 20) conveyancing = 20;
-            conveyancing = Decimal.Multiply(conveyancing, (decimal)1.07);
-            conveyancing = Math.Round(Decimal.Multiply(conveyancing, (decimal)100)) / 100;
+            conveyancing = conveyancing * 1.07m;
+            conveyancing = Math.Round(conveyancing * 100m) / 100;
 
             fees.signingFeesCpf += conveyancing;
 
-            fees.signingFeesCpf += (decimal)64.45;
+            fees.signingFeesCpf += 64.45m;
 
             fees.signingFeesCpf -= fees.optionFee;
 
@@ -284,32 +352,32 @@ namespace BTOFindrWeb.Controllers
             fees.collectionFeesCash = 0;
             fees.collectionFeesCpf = 0;
 
-            fees.collectionFeesCpf += (decimal)38.30;
+            fees.collectionFeesCpf += 38.30m;
 
             decimal survey = 0;
 
             if (unit.unitType.unitTypeName.Equals("3-Room ($6k ceiling)"))
             {
-                survey = (decimal)212.50;
+                survey = 212.50m;
             }
             else if (unit.unitType.unitTypeName.Equals("3-Room"))
             {
-                survey = (decimal)212.50;
+                survey = 212.50m;
             }
             else if (unit.unitType.unitTypeName.Equals("4-Room"))
             {
-                survey = (decimal)275;
+                survey = 275m;
             }
             else if (unit.unitType.unitTypeName.Equals("5-Room"))
             {
-                survey = (decimal)325;
+                survey = 325m;
             }
             else if (unit.unitType.unitTypeName.Equals("5-Room/3Gen"))
             {
-                survey = (decimal)325;
+                survey = 325m;
             }
 
-            survey = Decimal.Multiply(survey, (decimal)1.07);
+            survey = survey * 1.07m;
             fees.collectionFeesCpf += survey;
 
             if (payParams.currentCpf < fees.collectionFeesCpf)

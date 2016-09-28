@@ -49,13 +49,13 @@ namespace BTOFindrWeb.Controllers
                 query += "(UnitTypes.QuotaOthers > 0) AND ";
 
 
-            if (searchParams.roomTypes.Length > 0)
+            if (searchParams.unitTypes.Length > 0)
             {
                 query += "( ";
-                for (int i = 0; i < searchParams.roomTypes.Length; i++)
+                for (int i = 0; i < searchParams.unitTypes.Length; i++)
                 {
-                    query += "(UnitTypes.UnitTypeName = '" + searchParams.roomTypes[i] + "') ";
-                    if (i != searchParams.roomTypes.Length - 1)
+                    query += "(UnitTypes.UnitTypeName = '" + searchParams.unitTypes[i] + "') ";
+                    if (i != searchParams.unitTypes.Length - 1)
                         query += "OR ";
                     else
                         query += ") AND ";
