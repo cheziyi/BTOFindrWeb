@@ -288,18 +288,25 @@ namespace BTOFindrWeb.Controllers
 
         private void CalculateTravel(Block block, string postalCode)
         {
-            string uri = "https://maps.googleapis.com/maps/api/distancematrix/xml?units=metric";
-            string key = "AIzaSyAx2cHrI8CjdzkiByY_FS1nV93CFx9LD54";
-            uri += "&key=" + key + "&origins=" + block.locLat + "," + block.locLong + "&destinations=" + postalCode;
+            if (postalCode.Equals("")) return;
+            try
+            {
+                string uri = "https://maps.googleapis.com/maps/api/distancematrix/xml?units=metric";
+                string key = "AIzaSyAx2cHrI8CjdzkiByY_FS1nV93CFx9LD54";
+                uri += "&key=" + key + "&origins=" + block.locLat + "," + block.locLong + "&destinations=" + postalCode;
 
-            XmlTextReader reader = new XmlTextReader(uri);
-            reader.ReadToFollowing("duration");
-            reader.ReadToFollowing("value");
-            block.travelTime = Convert.ToInt32(reader.ReadElementContentAsString());
+                XmlTextReader reader = new XmlTextReader(uri);
+                reader.ReadToFollowing("duration");
+                reader.ReadToFollowing("value");
+                block.travelTime = Convert.ToInt32(reader.ReadElementContentAsString());
 
-            reader.ReadToFollowing("distance");
-            reader.ReadToFollowing("value");
-            block.travelDist = Convert.ToInt32(reader.ReadElementContentAsString());
+                reader.ReadToFollowing("distance");
+                reader.ReadToFollowing("value");
+                block.travelDist = Convert.ToInt32(reader.ReadElementContentAsString());
+            }
+            catch(Exception ex)
+            {
+            }
         }
     }
 }
