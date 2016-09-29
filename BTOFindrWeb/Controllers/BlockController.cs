@@ -79,24 +79,32 @@ namespace BTOFindrWeb.Controllers
                         {
                             while (dr.Read())
                             {
-                                Block b = new Block();
-                                b.blockId = Convert.ToInt32(dr["BlockId"]);
-                                b.blockNo = dr["BlockNo"].ToString();
-                                b.street = dr["Street"].ToString();
-                                b.deliveryDate = Convert.ToDateTime(dr["DeliveryDate"]);
-                                b.locLat = Convert.ToDecimal(dr["LocLat"]);
-                                b.locLong = Convert.ToDecimal(dr["LocLong"]);
-                                b.sitePlan = dr["SitePlan"].ToString();
-                                b.townMap = dr["TownMap"].ToString();
-                                b.blockPlan = dr["BlockPlan"].ToString();
-                                b.unitDist = dr["UnitDist"].ToString();
-                                b.floorPlan = dr["FloorPlan"].ToString();
-                                b.layoutIdeas = dr["LayoutIdeas"].ToString();
-                                b.specs = dr["Specs"].ToString();
-                                b.minPrice = Convert.ToDecimal(dr["MinPrice"]);
-                                b.maxPrice = Convert.ToDecimal(dr["MaxPrice"]);
-                                b.project = new Project();
-                                b.project.projectId = dr["ProjectId"].ToString();
+                                Block b = GetBlock(Convert.ToInt32(dr["BlockId"]));
+
+                                using (UnitTypeController utc = new UnitTypeController())
+                                {
+                                    b.unitTypes = utc.GetUnitTypesInBlock(b.blockId);
+                                    CalculateTravel(b, searchParams.postalCode);
+                                }
+
+                                //Block b = new Block();
+                                //b.blockId = Convert.ToInt32(dr["BlockId"]);
+                                //b.blockNo = dr["BlockNo"].ToString();
+                                //b.street = dr["Street"].ToString();
+                                //b.deliveryDate = Convert.ToDateTime(dr["DeliveryDate"]).ToShortDateString();
+                                //b.locLat = Convert.ToDecimal(dr["LocLat"]);
+                                //b.locLong = Convert.ToDecimal(dr["LocLong"]);
+                                //b.sitePlan = dr["SitePlan"].ToString();
+                                //b.townMap = dr["TownMap"].ToString();
+                                //b.blockPlan = dr["BlockPlan"].ToString();
+                                //b.unitDist = dr["UnitDist"].ToString();
+                                //b.floorPlan = dr["FloorPlan"].ToString();
+                                //b.layoutIdeas = dr["LayoutIdeas"].ToString();
+                                //b.specs = dr["Specs"].ToString();
+                                //b.minPrice = Convert.ToDecimal(dr["MinPrice"]);
+                                //b.maxPrice = Convert.ToDecimal(dr["MaxPrice"]);
+                                //b.project = new Project();
+                                //b.project.projectId = dr["ProjectId"].ToString();
 
                                 blocks.Add(b);
                             }
@@ -104,15 +112,6 @@ namespace BTOFindrWeb.Controllers
                     }
                 }
 
-
-                using (ProjectController pc = new ProjectController())
-                {
-                    foreach (Block b in blocks)
-                    {
-                        b.project = pc.GetProject(b.project.projectId);
-                        CalculateTravel(b, searchParams.postalCode);
-                    }
-                }
 
                 SortBlocks(searchParams.orderBy, blocks);
             }
@@ -139,6 +138,13 @@ namespace BTOFindrWeb.Controllers
                 using (UnitTypeController utc = new UnitTypeController())
                 {
                     block.unitTypes = utc.GetUnitTypesInBlock(block.blockId);
+                }
+                foreach (UnitType unitType in block.unitTypes)
+                {
+                    using (UnitController uc = new UnitController())
+                    {
+                        unitType.units = uc.GetUnitsInUnitType(unitType.unitTypeId);
+                    }
                 }
             }
             catch (Exception ex)
@@ -182,7 +188,7 @@ namespace BTOFindrWeb.Controllers
                                 block.blockId = Convert.ToInt32(dr["BlockId"]);
                                 block.blockNo = dr["BlockNo"].ToString();
                                 block.street = dr["Street"].ToString();
-                                block.deliveryDate = Convert.ToDateTime(dr["DeliveryDate"]);
+                                block.deliveryDate = Convert.ToDateTime(dr["DeliveryDate"]).ToShortDateString();
                                 block.locLat = Convert.ToDecimal(dr["LocLat"]);
                                 block.locLong = Convert.ToDecimal(dr["LocLong"]);
                                 block.sitePlan = dr["SitePlan"].ToString();

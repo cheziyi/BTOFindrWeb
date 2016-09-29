@@ -10,7 +10,7 @@ namespace BTOFindrWeb.Models
         public int blockId { get; set; }
         public string blockNo { get; set; }
         public string street { get; set; }
-        public DateTime deliveryDate { get; set; }
+        public string deliveryDate { get; set; }
         public decimal locLat { get; set; }
         public decimal locLong { get; set; }
         public int travelTime { get; set; }

@@ -94,6 +94,7 @@ namespace BTOFindrWeb.Controllers
             return unitType;
         }
 
+
         [HttpGet]
         public List<UnitType> GetUnitTypesInBlock(int blockId)
         {
@@ -127,14 +128,6 @@ namespace BTOFindrWeb.Controllers
                                 unitTypes.Add(u);
                             }
                         }
-                    }
-                }
-
-                using (UnitController uc = new UnitController())
-                {
-                    foreach (UnitType ut in unitTypes)
-                    {
-                        ut.units = uc.GetUnitsInUnitType(ut.unitTypeId);
                     }
                 }
             }
