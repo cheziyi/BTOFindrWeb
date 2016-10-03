@@ -187,68 +187,68 @@ namespace BTOFindrWeb.Controllers
         }
 
         [HttpPost]
-        public Unit GetUnitWithPayables(PayableParameters payParams)
+        public Unit GetUnitWithPayables(Profile profile, int unitId)
         {
-            Unit unit = GetUnit(payParams.unitId);
+            Unit unit = GetUnit(unitId);
             FeesPayable fees = new FeesPayable();
 
-            if (payParams.income <= 1500)
+            if (profile.income <= 1500)
             {
                 fees.grantAmt = 80000;
             }
-            else if (payParams.income <= 2000)
+            else if (profile.income <= 2000)
             {
                 fees.grantAmt = 75000;
             }
-            else if (payParams.income <= 2500)
+            else if (profile.income <= 2500)
             {
                 fees.grantAmt = 70000;
             }
-            else if (payParams.income <= 3000)
+            else if (profile.income <= 3000)
             {
                 fees.grantAmt = 65000;
             }
-            else if (payParams.income <= 3500)
+            else if (profile.income <= 3500)
             {
                 fees.grantAmt = 60000;
             }
-            else if (payParams.income <= 4000)
+            else if (profile.income <= 4000)
             {
                 fees.grantAmt = 55000;
             }
-            else if (payParams.income <= 4500)
+            else if (profile.income <= 4500)
             {
                 fees.grantAmt = 50000;
             }
-            else if (payParams.income <= 5000)
+            else if (profile.income <= 5000)
             {
                 fees.grantAmt = 45000;
             }
-            else if (payParams.income <= 5500)
+            else if (profile.income <= 5500)
             {
                 fees.grantAmt = 35000;
             }
-            else if (payParams.income <= 6000)
+            else if (profile.income <= 6000)
             {
                 fees.grantAmt = 30000;
             }
-            else if (payParams.income <= 6500)
+            else if (profile.income <= 6500)
             {
                 fees.grantAmt = 25000;
             }
-            else if (payParams.income <= 7000)
+            else if (profile.income <= 7000)
             {
                 fees.grantAmt = 20000;
             }
-            else if (payParams.income <= 7500)
+            else if (profile.income <= 7500)
             {
                 fees.grantAmt = 15000;
             }
-            else if (payParams.income <= 8000)
+            else if (profile.income <= 8000)
             {
                 fees.grantAmt = 10000;
             }
-            else if (payParams.income <= 8500)
+            else if (profile.income <= 8500)
             {
                 fees.grantAmt = 5000;
             }
@@ -338,15 +338,15 @@ namespace BTOFindrWeb.Controllers
 
             fees.signingFeesCpf -= fees.optionFee;
 
-            if (payParams.currentCpf < fees.signingFeesCpf)
+            if (profile.currentCpf < fees.signingFeesCpf)
             {
-                fees.signingFeesCash = fees.signingFeesCpf - payParams.currentCpf;
-                fees.signingFeesCpf = payParams.currentCpf;
-                payParams.currentCpf = 0;
+                fees.signingFeesCash = fees.signingFeesCpf - profile.currentCpf;
+                fees.signingFeesCpf = profile.currentCpf;
+                profile.currentCpf = 0;
             }
             else
             {
-                payParams.currentCpf -= fees.signingFeesCpf;
+                profile.currentCpf -= fees.signingFeesCpf;
             }
 
             fees.collectionFeesCash = 0;
@@ -380,22 +380,22 @@ namespace BTOFindrWeb.Controllers
             survey = survey * 1.07m;
             fees.collectionFeesCpf += survey;
 
-            if (payParams.currentCpf < fees.collectionFeesCpf)
+            if (profile.currentCpf < fees.collectionFeesCpf)
             {
-                fees.collectionFeesCash = fees.collectionFeesCpf - payParams.currentCpf;
-                fees.collectionFeesCpf = payParams.currentCpf;
+                fees.collectionFeesCash = fees.collectionFeesCpf - profile.currentCpf;
+                fees.collectionFeesCpf = profile.currentCpf;
             }
 
 
             decimal balance = fees.afterGrantAmt - downpayment;
 
-            fees.monthlyCpf = balance / (payParams.loanTenure * 12);
+            fees.monthlyCpf = balance / (profile.loanTenure * 12);
             fees.monthlyCash = 0;
 
-            if (payParams.monthlyCpf < fees.monthlyCpf)
+            if (profile.monthlyCpf < fees.monthlyCpf)
             {
-                fees.monthlyCash = fees.monthlyCpf - payParams.monthlyCpf;
-                fees.monthlyCpf = payParams.monthlyCpf;
+                fees.monthlyCash = fees.monthlyCpf - profile.monthlyCpf;
+                fees.monthlyCpf = profile.monthlyCpf;
             }
 
             unit.fees = fees;

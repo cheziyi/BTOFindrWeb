@@ -194,7 +194,7 @@
     </Compile>
     <Compile Include="Models\Block.cs" />
     <Compile Include="Models\FeesPayable.cs" />
-    <Compile Include="Models\PayableParameters.cs" />
+    <Compile Include="Models\Profile.cs" />
     <Compile Include="Models\SearchParameters.cs" />
     <Compile Include="Models\UnitType.cs" />
     <Compile Include="Models\Project.cs" />
