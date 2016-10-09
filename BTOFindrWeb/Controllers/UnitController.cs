@@ -1,4 +1,4 @@
-﻿using BTOFindrWeb.Models;
+﻿using BTOFindr.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
