@@ -111,7 +111,7 @@ namespace BTOFindrWeb.Controllers
         }
 
         [HttpPost]
-        public IEnumerable<Unit> GetRecommendedUnits(int[] unitIds)
+        public List<Unit> GetRecommendedUnits(int[] unitIds)
         {
             List<Unit> units = new List<Unit>();
 

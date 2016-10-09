@@ -16,7 +16,7 @@ namespace BTOFindrWeb.Controllers
 
 
         [HttpGet]
-        public IEnumerable<string> GetTownNames()
+        public List<string> GetTownNames()
         {
             List<string> towns = new List<string>();
             try

@@ -17,7 +17,7 @@ namespace BTOFindrWeb.Controllers
 
 
         [HttpGet]
-        public IEnumerable<string> GetUnitTypes()
+        public List<string> GetUnitTypes()
         {
             List<string> types = new List<string>();
             try

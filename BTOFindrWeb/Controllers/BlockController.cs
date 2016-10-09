@@ -16,7 +16,7 @@ namespace BTOFindrWeb.Controllers
         String connString = ConfigurationManager.ConnectionStrings["conn"].ConnectionString;
 
         [HttpPost]
-        public IEnumerable<Block> SearchBlocks(SearchParameters searchParams)
+        public List<Block> SearchBlocks(SearchParameters searchParams)
         {
             List<Block> blocks = new List<Block>();
 
