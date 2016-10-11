@@ -137,5 +137,55 @@ namespace BTOFindrWeb.Controllers
             }
             return unitTypes;
         }
+
+        [HttpPost]
+        public int AddUnitType(UnitType unitType)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connString))
+                {
+                    String query = "SELECT * FROM UnitTypes WHERE BlockId=@BlockId AND UnitTypeName=@UnitTypeName";
+
+                    using (BlockController bc = new BlockController())
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@BlockId", bc.AddBlock(unitType.block));
+                        cmd.Parameters.AddWithValue("@UnitTypeName", unitType.unitTypeName);
+                        conn.Open();
+
+                        using (SqlDataReader dr = cmd.ExecuteReader())
+                        {
+                            if (dr.Read())
+                            {
+                                return Convert.ToInt32(dr["UnitTypeId"]);
+                            }
+                        }
+                    }
+                }
+
+                using (SqlConnection conn = new SqlConnection(connString))
+                {
+                    String query = "INSERT INTO UnitTypes(BlockId,UnitTypeName,QuotaMalay,QuotaChinese,QuotaOthers) VALUES(@BlockId,@UnitTypeName,@QuotaMalay,@QuotaChinese,@QuotaOthers);";
+                    query += "SELECT CAST(scope_identity() AS int)";
+                    using (BlockController bc = new BlockController())
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@BlockId", bc.AddBlock(unitType.block));
+                        cmd.Parameters.AddWithValue("@UnitTypeName", unitType.unitTypeName);
+                        cmd.Parameters.AddWithValue("@QuotaMalay", unitType.quotaMalay);
+                        cmd.Parameters.AddWithValue("@QuotaChinese", unitType.quotaChinese);
+                        cmd.Parameters.AddWithValue("@QuotaOthers", unitType.quotaOthers);
+                        conn.Open();
+
+                        return (Int32)cmd.ExecuteScalar();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return -1;
+            }
+        }
     }
 }

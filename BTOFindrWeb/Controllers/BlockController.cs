@@ -304,8 +304,67 @@ namespace BTOFindrWeb.Controllers
                 reader.ReadToFollowing("value");
                 block.travelDist = Convert.ToInt32(reader.ReadElementContentAsString());
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+            }
+        }
+
+
+        [HttpPost]
+        public int AddBlock(Block block)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connString))
+                {
+                    String query = "SELECT * FROM Blocks WHERE BlockNo=@BlockNo AND Street=@Street";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@BlockNo", block.blockNo);
+                        cmd.Parameters.AddWithValue("@Street", block.street);
+                        conn.Open();
+
+                        using (SqlDataReader dr = cmd.ExecuteReader())
+                        {
+                            if (dr.Read())
+                            {
+                                return Convert.ToInt32(dr["BlockId"]);
+                            }
+                        }
+                    }
+                }
+
+
+                using (SqlConnection conn = new SqlConnection(connString))
+                {
+                    String query = "INSERT INTO Blocks(BlockNo,Street,ProjectId,DeliveryDate,LocLat,LocLong,SitePlan,TownMap,BlockPlan,UnitDist,FloorPlan,LayoutIdeas,Specs) VALUES(@BlockNo,@Street,@ProjectId,@DeliveryDate,@LocLat,@LocLong,@SitePlan,@TownMap,@BlockPlan,@UnitDist,@FloorPlan,@LayoutIdeas,@Specs);";
+                    query += "SELECT CAST(scope_identity() AS int)";
+                    using (ProjectController pc = new ProjectController())
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@BlockNo", block.blockNo);
+                        cmd.Parameters.AddWithValue("@Street", block.street);
+                        cmd.Parameters.AddWithValue("@ProjectId", pc.AddProject(block.project));
+                        cmd.Parameters.AddWithValue("@DeliveryDate", block.deliveryDate);
+                        cmd.Parameters.AddWithValue("@LocLat", block.locLat);
+                        cmd.Parameters.AddWithValue("@LocLong", block.locLong);
+                        cmd.Parameters.AddWithValue("@SitePlan", block.sitePlan);
+                        cmd.Parameters.AddWithValue("@TownMap", block.townMap);
+                        cmd.Parameters.AddWithValue("@BlockPlan", block.blockPlan);
+                        cmd.Parameters.AddWithValue("@UnitDist", block.unitDist);
+                        cmd.Parameters.AddWithValue("@FloorPlan", block.floorPlan);
+                        cmd.Parameters.AddWithValue("@LayoutIdeas", block.layoutIdeas);
+                        cmd.Parameters.AddWithValue("@Specs", block.specs);
+                        conn.Open();
+
+                        return (Int32)cmd.ExecuteScalar();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return -1;
             }
         }
     }

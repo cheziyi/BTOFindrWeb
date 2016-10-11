@@ -87,5 +87,54 @@ namespace BTOFindrWeb.Controllers
             }
             return project;
         }
+
+        [HttpPost]
+        public string AddProject(Project project)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connString))
+                {
+                    String query = "SELECT * FROM Projects WHERE ProjectName=@ProjectName";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@ProjectName", project.projectName);
+
+                        conn.Open();
+
+                        using (SqlDataReader dr = cmd.ExecuteReader())
+                        {
+                            if (dr.Read())
+                            {
+                               return dr["ProjectId"].ToString();
+                            }
+                        }
+                    }
+                }
+
+                using (SqlConnection conn = new SqlConnection(connString))
+                {
+                    String query = "INSERT INTO Projects(ProjectId,ProjectName,TownName,BallotDate,ProjectImage) VALUES(@ProjectId,@ProjectName,@TownName,@BallotDate,@ProjectImage)";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@ProjectId", project.projectId);
+                        cmd.Parameters.AddWithValue("@ProjectName", project.projectName);
+                        cmd.Parameters.AddWithValue("@TownName", project.townName);
+                        cmd.Parameters.AddWithValue("@BallotDate", project.ballotDate);
+                        cmd.Parameters.AddWithValue("@ProjectImage", project.projectImage);
+                        conn.Open();
+                        cmd.ExecuteNonQuery();
+                    }
+                    using (MessagingController mc = new MessagingController())
+                        mc.SendFCMMessage("projects", "New BTO Project '" + project.projectName + "' released!");
+
+                    return project.projectId;
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
     }
 }

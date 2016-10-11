@@ -446,5 +446,57 @@ namespace BTOFindrWeb.Controllers
                 Console.WriteLine(ex.Message);
             }
         }
+
+        [HttpPost]
+        public int AddUnit(Unit unit)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connString))
+                {
+                    String query = "SELECT * FROM Units WHERE UnitTypeId=@UnitTypeId AND UnitNo=@UnitNo";
+
+                    using (UnitTypeController utc = new UnitTypeController())
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@UnitTypeId", utc.AddUnitType(unit.unitType));
+                        cmd.Parameters.AddWithValue("@UnitNo", unit.unitNo);
+                        conn.Open();
+
+                        using (SqlDataReader dr = cmd.ExecuteReader())
+                        {
+                            if (dr.Read())
+                            {
+                                return Convert.ToInt32(dr["UnitId"]);
+                            }
+                        }
+                    }
+                }
+
+
+                using (SqlConnection conn = new SqlConnection(connString))
+                {
+                    String query = "INSERT INTO Units(UnitNo,Price,FloorArea,Avail,UnitTypeId) VALUES(@UnitNo,@Price,@FloorArea,@Avail,@UnitTypeId);";
+                    query += "SELECT CAST(scope_identity() AS int)";
+
+                    using (UnitTypeController utc = new UnitTypeController())
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@UnitNo", unit.unitNo);
+                        cmd.Parameters.AddWithValue("@Price", unit.price);
+                        cmd.Parameters.AddWithValue("@FloorArea", unit.floorArea);
+                        cmd.Parameters.AddWithValue("@Avail", unit.avail);
+                        cmd.Parameters.AddWithValue("@UnitTypeId", utc.AddUnitType(unit.unitType));
+                        conn.Open();
+
+                        return (Int32)cmd.ExecuteScalar();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return -1;
+            }
+        }
     }
 }
