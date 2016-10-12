@@ -293,7 +293,7 @@ namespace BTOFindrWeb.Controllers
             {
                 string uri = "https://maps.googleapis.com/maps/api/distancematrix/xml?units=metric";
                 string key = "AIzaSyAx2cHrI8CjdzkiByY_FS1nV93CFx9LD54";
-                uri += "&key=" + key + "&origins=" + block.locLat + "," + block.locLong + "&destinations=" + postalCode;
+                uri += "&key=" + key + "&origins=" + block.locLat + "," + block.locLong + "&destinations=Singapore " + postalCode;
 
                 XmlTextReader reader = new XmlTextReader(uri);
                 reader.ReadToFollowing("duration");
