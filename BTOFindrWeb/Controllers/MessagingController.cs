@@ -16,12 +16,12 @@ namespace BTOFindrWeb.Controllers
         static public HttpClient client;
 
         [HttpGet]
-        public bool SendFCMMessage(string topic, string content)
+        public bool SendFCMMessage(string deviceId, string content)
         {
 
             var message = JsonConvert.SerializeObject(new
             {
-                to = "/topics/" + topic,
+                to = deviceId,
                 notification = new
                 {
                     body = content,

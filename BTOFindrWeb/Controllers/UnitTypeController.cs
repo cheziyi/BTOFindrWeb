@@ -178,6 +178,8 @@ namespace BTOFindrWeb.Controllers
                         cmd.Parameters.AddWithValue("@QuotaOthers", unitType.quotaOthers);
                         conn.Open();
 
+                        NotifySubscribers(unitType);
+
                         return (Int32)cmd.ExecuteScalar();
                     }
                 }
@@ -186,6 +188,152 @@ namespace BTOFindrWeb.Controllers
             {
                 return -1;
             }
+        }
+
+        [HttpGet]
+        public bool RegisterNotification(string unitTypeName, string deviceId)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connString))
+                {
+                    String query = "SELECT * FROM UnitTypeSubscriptions WHERE UnitTypeName=@UnitTypeName AND DeviceId=@DeviceId";
+
+                    using (BlockController bc = new BlockController())
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@UnitTypeName", unitTypeName);
+                        cmd.Parameters.AddWithValue("@DeviceId", deviceId);
+                        conn.Open();
+
+                        using (SqlDataReader dr = cmd.ExecuteReader())
+                        {
+                            if (dr.Read())
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+
+                using (SqlConnection conn = new SqlConnection(connString))
+                {
+                    String query = "INSERT INTO UnitTypeSubscriptions(UnitTypeName,DeviceId) VALUES(@UnitTypeName,@DeviceId)";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@UnitTypeName", unitTypeName);
+                        cmd.Parameters.AddWithValue("@DeviceId", deviceId);
+                        conn.Open();
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        [HttpGet]
+        public bool UnregisterNotification(string unitTypeName, string deviceId)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connString))
+                {
+                    String query = "DELETE FROM UnitTypeSubscriptions WHERE UnitTypeName=@UnitTypeName AND DeviceId=@DeviceId";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@UnitTypeName", unitTypeName);
+                        cmd.Parameters.AddWithValue("@DeviceId", deviceId);
+                        conn.Open();
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            return true;
+        }
+
+
+        [HttpGet]
+        public List<string> GetNotifications(string deviceId)
+        {
+            List<string> unitTypeNames = new List<string>();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connString))
+                {
+                    String query = "SELECT * FROM UnitTypeSubscriptions WHERE DeviceId=@DeviceId";
+
+                    using (BlockController bc = new BlockController())
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@DeviceId", deviceId);
+                        conn.Open();
+
+                        using (SqlDataReader dr = cmd.ExecuteReader())
+                        {
+                            while (dr.Read())
+                            {
+                                unitTypeNames.Add(dr["UnitTypeName"].ToString());
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+
+            return unitTypeNames;
+
+        }
+
+        private bool NotifySubscribers(UnitType unitType)
+        {
+            List<string> deviceIds = new List<string>();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connString))
+                {
+                    String query = "SELECT * FROM UnitTypeSubscriptions WHERE UnitTypeName=@UnitTypeName";
+
+                    using (BlockController bc = new BlockController())
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@UnitTypeName", unitType.unitTypeName);
+                        conn.Open();
+
+                        using (SqlDataReader dr = cmd.ExecuteReader())
+                        {
+                            while (dr.Read())
+                            {
+                                deviceIds.Add(dr["DeviceId"].ToString());
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+            foreach (string deviceId in deviceIds)
+                using (MessagingController mc = new MessagingController())
+                    mc.SendFCMMessage(deviceId, "New " + unitType.unitTypeName + " units available at " + unitType.block.blockNo + " " + unitType.block.project.projectName + "!");
+
+            return true;
+
         }
     }
 }

@@ -125,8 +125,6 @@ namespace BTOFindrWeb.Controllers
                         conn.Open();
                         cmd.ExecuteNonQuery();
                     }
-                    using (MessagingController mc = new MessagingController())
-                        mc.SendFCMMessage("projects", "New BTO Project '" + project.projectName + "' released!");
 
                     return project.projectId;
                 }
