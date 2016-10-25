@@ -390,9 +390,10 @@ namespace BTOFindrWeb.Controllers
             decimal balance = fees.afterGrantAmt - downpayment;
 
             if (profile.loanTenure < 1)
-                profile.loanTenure = 1;
+                fees.monthlyCpf = balance;
+            else
+                fees.monthlyCpf = balance / (profile.loanTenure * 12);
 
-            fees.monthlyCpf = balance / (profile.loanTenure * 12);
             fees.monthlyCash = 0;
 
             if (profile.monthlyCpf < fees.monthlyCpf)
