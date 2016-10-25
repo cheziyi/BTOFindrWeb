@@ -131,7 +131,7 @@ namespace BTOFindrWeb.Controllers
             {
                 Unit u = GetUnit(unitIds[i]);
 
-                priceQuery += "((Units.Price >= " + Math.Round(u.price / 10000) * 10000 + ") AND (Units.Price <= " + Math.Round((u.price+10000) / 10000) * 10000 + ")) ";
+                priceQuery += "((Units.Price >= " + Math.Round(u.price / 10000) * 10000 + ") AND (Units.Price <= " + Math.Round((u.price + 10000) / 10000) * 10000 + ")) ";
                 if (i != unitIds.Length - 1)
                     priceQuery += "OR ";
                 else
@@ -388,6 +388,9 @@ namespace BTOFindrWeb.Controllers
 
 
             decimal balance = fees.afterGrantAmt - downpayment;
+
+            if (profile.loanTenure < 1)
+                profile.loanTenure = 1;
 
             fees.monthlyCpf = balance / (profile.loanTenure * 12);
             fees.monthlyCash = 0;
