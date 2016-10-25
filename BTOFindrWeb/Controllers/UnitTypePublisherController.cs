@@ -12,7 +12,7 @@ using System.Web.Http;
 
 namespace BTOFindrWeb.Controllers
 {
-    public class UnitTypePublishingController : ApiController
+    public class UnitTypePublisherController : ApiController
     {
         String connString = ConfigurationManager.ConnectionStrings["conn"].ConnectionString;
         static public HttpClient client;

@@ -178,7 +178,7 @@ namespace BTOFindrWeb.Controllers
                         cmd.Parameters.AddWithValue("@QuotaOthers", unitType.quotaOthers);
                         conn.Open();
 
-                        using (UnitTypePublishingController utpc = new UnitTypePublishingController())
+                        using (UnitTypePublisherController utpc = new UnitTypePublisherController())
                         {
                             utpc.Notify(unitType);
                         }
