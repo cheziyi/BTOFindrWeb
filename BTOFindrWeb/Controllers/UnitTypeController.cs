@@ -328,9 +328,10 @@ namespace BTOFindrWeb.Controllers
                 return false;
             }
 
+            string content = "New " + unitType.unitTypeName + " units available at " + unitType.block.blockNo + " " + unitType.block.project.projectName + "!";
+
             foreach (string deviceId in deviceIds)
             {
-                string content = "New " + unitType.unitTypeName + " units available at " + unitType.block.blockNo + " " + unitType.block.project.projectName + "!";
                 var message = JsonConvert.SerializeObject(new
                 {
                     to = deviceId,
@@ -346,12 +347,8 @@ namespace BTOFindrWeb.Controllers
                     client.Headers.Add(HttpRequestHeader.ContentType, "application/json");
                     client.Headers.Add(HttpRequestHeader.Authorization, "key=AIzaSyB2t8hQOj1o6zPK6-TBdk3XkpnKwMXnN8Y");
                     byte[] response = client.UploadData("https://fcm.googleapis.com/fcm/send", "POST", Encoding.UTF8.GetBytes(message));
-                    string result = client.Encoding.GetString(response);
-                    if (result.Contains("message_id"))
-                        return true;
+                    //string result = client.Encoding.GetString(response);
                 }
-                return false;
-
             }
             return true;
         }
