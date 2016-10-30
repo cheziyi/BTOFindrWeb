@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace BTOFindr.Models
 {
+    /// <summary>
+    /// This describes a user's Profile.
+    /// </summary>
     public class Profile
     {
         public String postalCode { get; set; }

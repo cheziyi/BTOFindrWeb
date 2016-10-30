@@ -41,6 +41,7 @@
             this.webBrowser1.Size = new System.Drawing.Size(533, 243);
             this.webBrowser1.TabIndex = 0;
             this.webBrowser1.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.webBrowser1_DocumentCompleted);
+            this.webBrowser1.Navigated += new System.Windows.Forms.WebBrowserNavigatedEventHandler(this.webBrowser1_Navigated);
             // 
             // lblStatus
             // 
@@ -59,7 +60,7 @@
             this.btnScrape.TabIndex = 1;
             this.btnScrape.Text = "Initiate Scraping!";
             this.btnScrape.UseVisualStyleBackColor = true;
-            this.btnScrape.Click += new System.EventHandler(this.btnProjects_Click);
+            this.btnScrape.Click += new System.EventHandler(this.btnScrape_Click);
             // 
             // ScrapingForm
             // 

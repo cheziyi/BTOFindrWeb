@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 
 namespace BTOFindr.Models
 {
+    /// <summary>
+    ///  This describes a HDB BTO Block in a Project that contains one or more Unit Types.
+    /// </summary>
     public class Block
     {
         public int blockId { get; set; }

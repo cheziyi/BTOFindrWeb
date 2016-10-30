@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace BTOFindr.Models
+﻿namespace BTOFindr.Models
 {
+    /// <summary>
+    ///  This describes FeesPayable for the fees
+    ///  a user need to pay for a particular unit.
+    /// </summary>
     public class FeesPayable
     {
         public decimal grantAmt { get; set; }
