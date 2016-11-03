@@ -12,6 +12,9 @@ using System.Web.Http;
 
 namespace BTOFindrWeb.Controllers
 {
+    /// <summary>
+    /// UnitTypePublisher interface for Firebase Cloud Messaging (FCM)
+    /// </summary>
     interface UnitTypePublisher
     {
         bool Subscribe(string unitTypeName, string deviceId);

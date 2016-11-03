@@ -10,23 +10,37 @@ using System.Web.Http;
 
 namespace BTOFindrWeb.Controllers
 {
+    /// <summary>
+    /// UnitController web service for retrieving, updating and adding of units into database.
+    /// </summary>
     public class UnitController : ApiController
     {
+        /// <summary>
+        /// SQL connection string from web.config
+        /// </summary>
         String connString = ConfigurationManager.ConnectionStrings["conn"].ConnectionString;
 
+        /// <summary>
+        /// Method to get unit information.
+        /// </summary>
+        /// <param name="unitId">The id of a unit</param>
+        /// <returns>A Unit object with relevant information</returns>
         [HttpGet]
         public Unit GetUnit(int unitId)
         {
+            // Initialize a Unit object
             Unit unit = new Unit();
 
             if (unitId == 0)
             {
+                // Return empty unit if id is 0
                 return unit;
             }
             try
             {
                 using (SqlConnection conn = new SqlConnection(connString))
                 {
+                    // Query the database for unit with the specific unit id
                     String query = "SELECT * FROM Units WHERE UnitId = @UnitId";
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
@@ -38,6 +52,7 @@ namespace BTOFindrWeb.Controllers
                         {
                             if (dr.Read())
                             {
+                                // If a row is returned, set all unit information respectively
                                 unit.unitId = Convert.ToInt32(dr["UnitId"]);
                                 unit.unitNo = dr["UnitNo"].ToString();
                                 unit.price = Convert.ToDecimal(dr["Price"]);
@@ -59,26 +74,34 @@ namespace BTOFindrWeb.Controllers
             }
             catch (Exception ex)
             {
+                // If an error occurred, write error message on console
                 Console.WriteLine(ex.Message);
             }
+            // Return the Unit object
             return unit;
         }
 
-
-
+        /// <summary>
+        /// Method to get units in a particular unit type.
+        /// </summary>
+        /// <param name="unitTypeId">The id of a unit</param>
+        /// <returns>A list of Unit object within the particular unit type</returns>
         [HttpGet]
         public List<Unit> GetUnitsInUnitType(int unitTypeId)
         {
+            // Initialize a list of Unit object
             List<Unit> units = new List<Unit>();
 
             if (unitTypeId == 0)
             {
+                // Return empty unit if id is 0
                 return units;
             }
             try
             {
                 using (SqlConnection conn = new SqlConnection(connString))
                 {
+                    // Query the database for units with the specific unit type id
                     String query = "SELECT * FROM Units WHERE UnitTypeId=@UnitTypeId ORDER BY UnitNo ASC";
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
@@ -90,6 +113,7 @@ namespace BTOFindrWeb.Controllers
                         {
                             while (dr.Read())
                             {
+                                // If a row is returned, initialize a Unit object
                                 Unit u = new Unit();
                                 u.unitId = Convert.ToInt32(dr["UnitId"]);
                                 u.unitNo = dr["UnitNo"].ToString();
@@ -97,6 +121,7 @@ namespace BTOFindrWeb.Controllers
                                 u.floorArea = Convert.ToInt32(dr["FloorArea"]);
                                 u.avail = Convert.ToBoolean(dr["Avail"]);
                                 u.faveCount = Convert.ToInt32(dr["FaveCount"]);
+                                // Add Unit object into the list of units
                                 units.Add(u);
                             }
                         }
@@ -105,44 +130,56 @@ namespace BTOFindrWeb.Controllers
             }
             catch (Exception ex)
             {
+                // If an error occurred, write error message on console
                 Console.WriteLine(ex.Message);
             }
+            // Return the list of Unit objects
             return units;
         }
 
+        /// <summary>
+        /// Method to get recommended units relative to user's favourited units
+        /// </summary>
+        /// <param name="unitIds">A list of integer</param>
+        /// <returns>A list of Unit object</returns>
         [HttpPost]
         public List<Unit> GetRecommendedUnits(int[] unitIds)
         {
+            // Initialize a list of Unit object
             List<Unit> units = new List<Unit>();
 
-
+            // Query the database for the first 20 units
             String query = "SELECT TOP (20) Units.UnitId ";
             query += "FROM Units INNER JOIN ";
             query += "UnitTypes ON UnitTypes.UnitTypeId = Units.UnitTypeId INNER JOIN ";
             query += "Blocks ON Blocks.BlockId = UnitTypes.BlockId INNER JOIN ";
             query += "Projects ON Blocks.ProjectId = Projects.ProjectId WHERE ";
-
-
+            
             String priceQuery = "( ";
             String townQuery = "( ";
             String unitQuery = "( ";
 
+            // Loop through the list of unit ids
             for (int i = 0; i < unitIds.Length; i++)
             {
+                // Get unit information
                 Unit u = GetUnit(unitIds[i]);
 
+                // Form price query to be concatenated
                 priceQuery += "((Units.Price >= " + Math.Round(u.price / 10000) * 10000 + ") AND (Units.Price <= " + Math.Round((u.price + 10000) / 10000) * 10000 + ")) ";
                 if (i != unitIds.Length - 1)
                     priceQuery += "OR ";
                 else
                     priceQuery += ") AND ";
 
+                // Form town query to be concatenated
                 townQuery += "(Projects.TownName = '" + u.unitType.block.project.townName + "') ";
                 if (i != unitIds.Length - 1)
                     townQuery += "OR ";
                 else
                     townQuery += ") AND ";
 
+                // Form unit query to prevent retrieval of same unit
                 unitQuery += "(Units.UnitId != " + u.unitId + ") ";
                 if (i != unitIds.Length - 1)
                     unitQuery += "AND ";
@@ -150,13 +187,10 @@ namespace BTOFindrWeb.Controllers
                     unitQuery += ") ";
             }
 
-
-
+            // Concatenate all the query
             query += priceQuery + townQuery + unitQuery;
             query += "ORDER BY Units.FaveCount DESC, Units.Price ASC";
-
-
-
+            
             try
             {
                 using (SqlConnection conn = new SqlConnection(connString))
@@ -169,6 +203,7 @@ namespace BTOFindrWeb.Controllers
                         {
                             while (dr.Read())
                             {
+                                // If a row is returned, initialize a Unit object
                                 Unit u = GetUnit(Convert.ToInt32(dr["UnitId"]));
                                 units.Add(u);
                             }
@@ -178,20 +213,29 @@ namespace BTOFindrWeb.Controllers
             }
             catch (Exception ex)
             {
+                // If an error occurred, write error message on console
                 Console.WriteLine(ex.Message);
             }
 
-
-
+            // Return the list of Unit objects
             return units;
         }
 
+        /// <summary>
+        /// Method to get unit information and calculate fees payables with user's profile
+        /// </summary>
+        /// <param name="profile">The user's profile</param>
+        /// <param name="unitId">The id of a unit</param>
+        /// <returns>A Unit object with relevant information</returns>
         [HttpPost]
         public Unit GetUnitWithPayables(Profile profile, int unitId)
         {
+            // Initialize a Unit object
             Unit unit = GetUnit(unitId);
+            // Initialize a FeesPayable object
             FeesPayable fees = new FeesPayable();
 
+            // Set grant amount for the respective profile income
             if (profile.income <= 1500)
             {
                 fees.grantAmt = 80000;
@@ -253,10 +297,12 @@ namespace BTOFindrWeb.Controllers
                 fees.grantAmt = 5000;
             }
 
+            // Calculate after grant amount
             fees.afterGrantAmt = unit.price - fees.grantAmt;
 
             fees.applFee = 10;
 
+            // Set option fee for the respective unit type
             if (unit.unitType.unitTypeName.Equals("3-Room ($6k ceiling)"))
             {
                 fees.optionFee = 1000;
@@ -281,12 +327,14 @@ namespace BTOFindrWeb.Controllers
             fees.signingFeesCash = 0;
             fees.signingFeesCpf = 0;
 
+            // Calculate down payment
             decimal downpayment = fees.afterGrantAmt * 0.10m;
 
             fees.signingFeesCpf += downpayment;
 
             decimal stampDutyLease = 0;
 
+            // Calculate stamp duty lease relative to the after grant amount
             if (fees.afterGrantAmt <= 180000)
             {
                 stampDutyLease += fees.afterGrantAmt * 0.01m;
@@ -307,9 +355,9 @@ namespace BTOFindrWeb.Controllers
             stampDutyLease = Math.Round(stampDutyLease * 100m) / 100;
             fees.signingFeesCpf += stampDutyLease;
 
-
             decimal conveyancing = 0;
 
+            // Calculate conveyancing relative to the after grant amount
             if (fees.afterGrantAmt <= 30000)
             {
                 conveyancing += Math.Round(fees.afterGrantAmt / 1000) * 0.90m;
@@ -332,6 +380,7 @@ namespace BTOFindrWeb.Controllers
             conveyancing = conveyancing * 1.07m;
             conveyancing = Math.Round(conveyancing * 100m) / 100;
 
+            // Calculate signing fees
             fees.signingFeesCpf += conveyancing;
 
             fees.signingFeesCpf += 64.45m;
@@ -356,6 +405,7 @@ namespace BTOFindrWeb.Controllers
 
             decimal survey = 0;
 
+            // Set survey amount for the respective unit type
             if (unit.unitType.unitTypeName.Equals("3-Room ($6k ceiling)"))
             {
                 survey = 212.50m;
@@ -385,10 +435,10 @@ namespace BTOFindrWeb.Controllers
                 fees.collectionFeesCash = fees.collectionFeesCpf - profile.currentCpf;
                 fees.collectionFeesCpf = profile.currentCpf;
             }
-
-
+            
+            // Calculate balance
             decimal balance = fees.afterGrantAmt - downpayment;
-
+            
             if (profile.loanTenure < 1)
                 fees.monthlyCpf = balance;
             else
@@ -402,11 +452,15 @@ namespace BTOFindrWeb.Controllers
                 fees.monthlyCpf = profile.monthlyCpf;
             }
 
+            // Set calculated fees payable to unit and return Unit object
             unit.fees = fees;
             return unit;
         }
 
-
+        /// <summary>
+        /// Method to increase favourite count to indicate a user has favourited the specific unit
+        /// </summary>
+        /// <param name="unitId">The id of a unit</param>
         [HttpGet]
         public void AddFaveUnit(int unitId)
         {
@@ -414,6 +468,7 @@ namespace BTOFindrWeb.Controllers
             {
                 using (SqlConnection conn = new SqlConnection(connString))
                 {
+                    // Query the database to update the specific unit favourite count with an increment
                     String query = "UPDATE Units SET FaveCount=(FaveCount+1) WHERE UnitId=@UnitId";
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
@@ -425,10 +480,15 @@ namespace BTOFindrWeb.Controllers
             }
             catch (Exception ex)
             {
+                // If an error occurred, write error message on console
                 Console.WriteLine(ex.Message);
             }
         }
 
+        /// <summary>
+        /// Method to reduce favourite count to indicate a user has no longer favourite the specific unit
+        /// </summary>
+        /// <param name="unitId">The id of a unit</param>
         [HttpGet]
         public void RemoveFaveUnit(int unitId)
         {
@@ -436,6 +496,7 @@ namespace BTOFindrWeb.Controllers
             {
                 using (SqlConnection conn = new SqlConnection(connString))
                 {
+                    // Query the database to update the specific unit favourite count with a decrement
                     String query = "UPDATE Units SET FaveCount=(FaveCount-1) WHERE UnitId=@UnitId";
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
@@ -447,10 +508,16 @@ namespace BTOFindrWeb.Controllers
             }
             catch (Exception ex)
             {
+                // If an error occurred, write error message on console
                 Console.WriteLine(ex.Message);
             }
         }
 
+        /// <summary>
+        /// Method to add unit into database. If it exists in the database, return its unit id.
+        /// </summary>
+        /// <param name="unit">A Unit object to be added into database</param>
+        /// <returns>The respective unit id for the inserted unit</returns>
         [HttpPost]
         public int AddUnit(Unit unit)
         {
@@ -458,6 +525,7 @@ namespace BTOFindrWeb.Controllers
             {
                 using (SqlConnection conn = new SqlConnection(connString))
                 {
+                    // Query the database for any existing unit with the same unit type id and unit number
                     String query = "SELECT * FROM Units WHERE UnitTypeId=@UnitTypeId AND UnitNo=@UnitNo";
 
                     using (UnitTypeController utc = new UnitTypeController())
@@ -471,6 +539,7 @@ namespace BTOFindrWeb.Controllers
                         {
                             if (dr.Read())
                             {
+                                // If a row is returned, return the retrieved unit id
                                 return Convert.ToInt32(dr["UnitId"]);
                             }
                         }
@@ -480,6 +549,7 @@ namespace BTOFindrWeb.Controllers
 
                 using (SqlConnection conn = new SqlConnection(connString))
                 {
+                    // Query to insert unit into database
                     String query = "INSERT INTO Units(UnitNo,Price,FloorArea,Avail,UnitTypeId) VALUES(@UnitNo,@Price,@FloorArea,@Avail,@UnitTypeId);";
                     query += "SELECT CAST(scope_identity() AS int)";
 
@@ -493,12 +563,14 @@ namespace BTOFindrWeb.Controllers
                         cmd.Parameters.AddWithValue("@UnitTypeId", utc.AddUnitType(unit.unitType));
                         conn.Open();
 
+                        // Return the unit id
                         return (Int32)cmd.ExecuteScalar();
                     }
                 }
             }
             catch (Exception ex)
             {
+                // If an error occurred, return -1
                 return -1;
             }
         }
