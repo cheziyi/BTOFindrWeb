@@ -9,6 +9,8 @@ namespace BTOFindrScraper
     /// <summary>
     /// Class to support parsing of HTML markup to Unit objects
     /// and saving it to database via the web service.
+    /// 
+    /// Author: Calvin Che Zi Yi
     /// </summary>
     class ParsingController
     {

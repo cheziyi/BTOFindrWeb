@@ -14,6 +14,8 @@ namespace BTOFindrWeb.Controllers
 {
     /// <summary>
     /// UnitTypePublisher interface for Firebase Cloud Messaging (FCM)
+    /// 
+    /// Author: Calvin Che Zi Yi
     /// </summary>
     interface UnitTypePublisher
     {

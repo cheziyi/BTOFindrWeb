@@ -3,6 +3,8 @@
     /// <summary>
     /// This describes Search Parameters that a user
     /// will pass to BTOFindr when searching for Blocks.
+    /// 
+    /// Author: Calvin Che Zi Yi
     /// </summary>
     public class SearchParameters
     {

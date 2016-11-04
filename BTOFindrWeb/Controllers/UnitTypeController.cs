@@ -15,6 +15,8 @@ namespace BTOFindrWeb.Controllers
     /// <summary>
     /// UnitTypeController web service class for retrieving and adding of unit types in database.
     /// Manage notification of newly added unit type to user that has subscription of the specific unit type.
+    /// 
+    /// Author: Calvin Che Zi Yi
     /// </summary>
     public class UnitTypeController : ApiController, UnitTypePublisher
     {

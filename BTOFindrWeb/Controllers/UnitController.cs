@@ -12,6 +12,8 @@ namespace BTOFindrWeb.Controllers
 {
     /// <summary>
     /// UnitController web service for retrieving, updating and adding of units into database.
+    /// 
+    /// Author: Calvin Che Zi Yi
     /// </summary>
     public class UnitController : ApiController
     {

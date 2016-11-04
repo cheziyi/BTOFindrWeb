@@ -1,8 +1,10 @@
 ﻿namespace BTOFindr.Models
 {
     /// <summary>
-    ///  This describes FeesPayable for the fees
-    ///  a user need to pay for a particular unit.
+    /// This describes FeesPayable for the fees
+    /// a user need to pay for a particular unit.
+    /// 
+    /// Author: Calvin Che Zi Yi
     /// </summary>
     public class FeesPayable
     {

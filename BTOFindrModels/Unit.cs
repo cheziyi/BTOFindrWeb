@@ -4,6 +4,8 @@ namespace BTOFindr.Models
 {
     /// <summary>
     /// This describes a HDB BTO Unit in a Unit Type.
+    /// 
+    /// Author: Calvin Che Zi Yi
     /// </summary>
     public class Unit
     {

@@ -4,6 +4,8 @@ namespace BTOFindr.Models
 {
     /// <summary>
     /// This describes a user's Profile.
+    /// 
+    /// Author: Calvin Che Zi Yi
     /// </summary>
     public class Profile
     {

@@ -8,6 +8,8 @@ namespace BTOFindrScraper
     /// UI class to scrap data from HDB's website.
     /// Uses a WebBrowser control to navigate through the website.
     /// Note: Flat type is a HDB term similar to our UnitType object.
+    /// 
+    /// Author: Calvin Che Zi Yi
     /// </summary>
     public partial class ScrapingForm : Form
     {

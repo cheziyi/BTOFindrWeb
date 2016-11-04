@@ -13,6 +13,8 @@ namespace BTOFindrWeb.Controllers
 {
     /// <summary>
     /// BlockController web service class for retrieving and adding of blocks in database.
+    /// 
+    /// Author: Calvin Che Zi Yi
     /// </summary>
     public class BlockController : ApiController
     {

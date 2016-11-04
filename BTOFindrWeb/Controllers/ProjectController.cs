@@ -12,6 +12,8 @@ namespace BTOFindrWeb.Controllers
 {
     /// <summary>
     /// ProjectController web service class for retrieving and adding of projects in database.
+    /// 
+    /// Author: Calvin Che Zi Yi
     /// </summary>
     public class ProjectController : ApiController
     {

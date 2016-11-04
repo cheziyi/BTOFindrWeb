@@ -3,7 +3,9 @@
 namespace BTOFindr.Models
 {
     /// <summary>
-    ///  This describes a HDB BTO Block in a Project that contains one or more Unit Types.
+    /// This describes a HDB BTO Block in a Project that contains one or more Unit Types.
+    /// 
+    /// Author: Calvin Che Zi Yi
     /// </summary>
     public class Block
     {

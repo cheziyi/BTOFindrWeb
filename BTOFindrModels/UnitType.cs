@@ -6,6 +6,8 @@ namespace BTOFindr.Models
     /// This describes a HDB BTO Unit Type in a Block that contains one or more Units.
     /// A Unit Type is a group of Units with the same number of rooms, e.g. 3-Room, 4-Room.
     /// Also contains the quota of ethnic buyers that HDB has allocated for each Unit Type.
+    /// 
+    /// Author: Calvin Che Zi Yi
     /// </summary>
     public class UnitType
     {
